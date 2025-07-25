@@ -3,20 +3,29 @@ import 'package:num_attendant/account_page.dart';
 import 'package:num_attendant/home_screen.dart';
 
 class MainBottomNav extends StatefulWidget {
+  final Map<String, dynamic> user;
+  MainBottomNav({super.key, required this.user});
+
   @override
   _MainBottomNavState createState() => _MainBottomNavState();
 }
 
 class _MainBottomNavState extends State<MainBottomNav> {
+  
   int _selectedIndex = 0;
+late List<Widget> _screens;  // Declare but don't initialize yet
 
-  final List<Widget> _screens = [
-    HomeScreen(),
-    Center(child: Text('Calendar Screen')),
-    Center(child: Text('Search Screen')),
-    Center(child: Text('Store Screen')),
-    AccountScreen(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _screens = [
+      HomeScreen(user: widget.user),
+      Center(child: Text('Calendar Screen')),
+      Center(child: Text('Search Screen')),
+      Center(child: Text('Store Screen')),
+      AccountScreen(user: widget.user),  // Now widget.user is accessible
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class HomeScreen extends StatelessWidget {
+  final Map<String, dynamic> user;
+  HomeScreen({super.key, required this.user});
+
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   @override
@@ -71,7 +74,7 @@ class HomeScreen extends StatelessWidget {
                                     textAlign: TextAlign.left,
                                   ),
                                   Text(
-                                    "4",
+                                    '${user["rank"]}',
                                     style: TextStyle(
                                       fontFamily: "Montserrat",
                                       fontSize: 16,
@@ -103,7 +106,7 @@ class HomeScreen extends StatelessWidget {
                                     textAlign: TextAlign.left,
                                   ),
                                   Text(
-                                    "56",
+                                    '${user["generation"]}',
                                     style: TextStyle(
                                       fontFamily: "Montserrat",
                                       fontSize: 16,
@@ -164,7 +167,7 @@ class HomeScreen extends StatelessWidget {
                                     textAlign: TextAlign.left,
                                   ),
                                   Text(
-                                    "76%",
+                                    "${user["attendant"]}%",
                                     style: TextStyle(
                                       fontFamily: "Montserrat",
                                       fontSize: 16,
@@ -197,7 +200,7 @@ class HomeScreen extends StatelessWidget {
                                     textAlign: TextAlign.left,
                                   ),
                                   Text(
-                                    "20 Days",
+                                    "${user["dayofabsent"]} Days",
                                     style: TextStyle(
                                       color: Color(0xFFDA554C),
                                       fontFamily: "Montserrat",

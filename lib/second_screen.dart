@@ -1,10 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:num_attendant/main_box_nav.dart';
 
 // Second Page (Edit Page)
 class SecondPage extends StatelessWidget {
-  const SecondPage({super.key});
-
+  final Map<String, dynamic> user;
+  const SecondPage({super.key, required this.user});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +31,7 @@ class SecondPage extends StatelessWidget {
                   onPressed: () {
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) =>  MainBottomNav()),
+                      MaterialPageRoute(builder: (context) =>  MainBottomNav(user: user)),
                       (route) => false,
                     );
                   },
@@ -53,24 +54,18 @@ class SecondPage extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    _infoCard(
-                      Icons.account_circle_sharp,
-                      "First Name",
-                      "Sovichea",
-                    ),
+                    _infoCard(Icons.account_circle_sharp, "Full Name", user["fullname"] ?? "full name"),
                     SizedBox(height: 15),
-                    _infoCard(Icons.account_circle_sharp, "Last Name", "Sok"),
+                    _infoCard(Icons.work, "Occupation", user["occupation"] ?? "occupation"),
                     SizedBox(height: 15),
-                    _infoCard(Icons.work, "Occupation", "ICT Assistant"),
+                    _infoCard(Icons.email, "Email", user["email"] ?? "user@gmail.com"),
                     SizedBox(height: 15),
-                    _infoCard(Icons.email, "Email", "user@gmail.com"),
-                    SizedBox(height: 15),
-                    _infoCard(Icons.phone, "Phone Number", "+855 12 654 102"),
+                    _infoCard(Icons.phone, "Phone Number", user["phoneNumber"] ?? "+855 XX XXX XXX"),
                     SizedBox(height: 15),
                     _infoCard(
                       Icons.location_on,
                       "Address",
-                      "#XX, District, City, Postal Code",
+                      user["address"] ?? "#XX, District, City, Postal Code",
                     ),
                   ],
                 ),
@@ -96,7 +91,13 @@ class SecondPage extends StatelessWidget {
             children: [Icon(icon, size: 20), SizedBox(width: 10), Text(title)],
           ),
           SizedBox(height: 10),
-          Text(value),
+          TextField(
+            controller: TextEditingController(text: value),
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.symmetric(horizontal: 10),
+            ),
+          ),
         ],
       ),
     );
