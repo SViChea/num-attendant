@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1024758191640",
+    "project_id": "numattendant",
+    "storage_bucket": "numattendant.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1024758191640:android:b1abb45232767b8c12556d",
+        "android_client_info": {
+          "package_name": "com.example.num_attendant"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgOPKCmvbgOx-j_gHEyk4VO2U3icwBn5U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
