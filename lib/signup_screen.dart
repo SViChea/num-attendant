@@ -1,21 +1,24 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:num_attendant/login_screen.dart';
 import 'package:num_attendant/main_box_nav.dart';
-import 'package:num_attendant/signup_screen.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key});
+class SignUp extends StatefulWidget {
+  const SignUp({Key? key});
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _SignUpState createState() => _SignUpState();
 }
 
 class AuthHelper {
   var auth = FirebaseAuth.instance;
 
-  Future<bool> signInEmailAndPassword(String email, String password) async {
+  Future<bool> signUpEmailAndPassword(String email, String password) async {
     try {
-      await auth.signInWithEmailAndPassword(email: email, password: password);
+      await auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
       return true;
     } catch (e) {
       print(e);
@@ -24,11 +27,15 @@ class AuthHelper {
   }
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignUpState extends State<SignUp> {
   final AuthHelper _authentication = AuthHelper();
-  final TextEditingController _emailOrUsernameController =
-      TextEditingController();
+
+  final TextEditingController _fullName = TextEditingController();
+  final TextEditingController _emailAddress = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+  final TextEditingController _phoneNumber = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
                 children: <Widget>[
                   const SizedBox(height: 10),
                   const Text(
-                    "LOG IN",
+                    "SIGN UP",
                     style: TextStyle(
                       color: Color(0xFF08252E),
                       fontSize: 34,
@@ -87,9 +94,42 @@ class _LoginPageState extends State<LoginPage> {
                       maxHeight: 55.0,
                     ),
                     child: TextFormField(
-                      controller: _emailOrUsernameController,
+                      controller: _fullName,
                       decoration: InputDecoration(
-                        labelText: "Username or Email Address",
+                        labelText: "Full Name",
+                        labelStyle: const TextStyle(
+                          color: Color(0xFF08252E),
+                          fontFamily: 'Montserrat',
+                          fontWeight: FontWeight.normal,
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.person,
+                          color: Color(0xFF08252E),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(26),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Color(0xFF08252E),
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(26),
+                        ),
+                      ),
+                      style: const TextStyle(color: Color(0xFF08252E)),
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  Container(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.9,
+                      maxHeight: 55.0,
+                    ),
+                    child: TextFormField(
+                      controller: _emailAddress,
+                      decoration: InputDecoration(
+                        labelText: "Email Address",
                         labelStyle: const TextStyle(
                           color: Color(0xFF08252E),
                           fontFamily: 'Montserrat',
@@ -146,55 +186,86 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Checkbox(
-                            value: false,
-                            onChanged: (bool? value) {},
-                            checkColor: Colors.white,
-                            activeColor: Colors.blue,
-                          ),
-                          const Text(
-                            "Remember Me",
-                            style: TextStyle(
-                              fontFamily: 'Montserrat',
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF08252E),
-                            ),
-                          ),
-                        ],
-                      ),
-                      TextButton(
-                        onPressed: () {},
-                        child: const Text(
-                          "Forget Password?",
-                          style: TextStyle(
-                            fontFamily: 'Montserrat',
-                            fontWeight: FontWeight.bold,
+                  const SizedBox(height: 15),
+                  Container(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.9,
+                      maxHeight: 55.0,
+                    ),
+                    child: TextFormField(
+                      controller: _confirmPasswordController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        labelText: "Confirm Password",
+                        labelStyle: const TextStyle(
+                          fontFamily: 'Montserrat',
+                          fontWeight: FontWeight.normal,
+                          color: Color(0xFF08252E),
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.lock,
+                          color: Color(0xFF08252E),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(26),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
                             color: Color(0xFF08252E),
+                            width: 2.0,
                           ),
+                          borderRadius: BorderRadius.circular(26),
                         ),
                       ),
-                    ],
+                    ),
                   ),
                   const SizedBox(height: 15),
+                  Container(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.9,
+                      maxHeight: 55.0,
+                    ),
+                    child: TextFormField(
+                      controller: _phoneNumber,
+                      decoration: InputDecoration(
+                        labelText: "Phone Number",
+                        labelStyle: const TextStyle(
+                          color: Color(0xFF08252E),
+                          fontFamily: 'Montserrat',
+                          fontWeight: FontWeight.normal,
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.person,
+                          color: Color(0xFF08252E),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(26),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Color(0xFF08252E),
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(26),
+                        ),
+                      ),
+                      style: const TextStyle(color: Color(0xFF08252E)),
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () async {
-                      bool isLoggedIn = await _authentication
-                          .signInEmailAndPassword(
-                            _emailOrUsernameController.text,
-                            _passwordController.text,
-                          );
-
-                      if (isLoggedIn) {
+                      if (_passwordController.text == _confirmPasswordController.text) {
+                        final res = await _authentication
+                            .signUpEmailAndPassword(
+                              _emailAddress.text,
+                              _passwordController.text,
+                            );
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => MainBottomNav(),
+                            builder: (context) => LoginPage(),
                           ),
                         );
                       } else {
@@ -202,12 +273,12 @@ class _LoginPageState extends State<LoginPage> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
-                              'Login failed. Please check your credentials.',
+                              'Passwords and Confirm Password do not match',
                             ),
                           ),
                         );
 
-                        _emailOrUsernameController.clear();
+                        _confirmPasswordController.clear();
                         _passwordController.clear();
                       }
                     },
@@ -217,32 +288,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
 
                     child: const Text(
-                      "Log In",
-                      style: TextStyle(
-                        fontFamily: 'Montserrat',
-                        fontSize: 18,
-                        fontWeight: FontWeight.normal,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: ()  {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SignUp(),
-                          ),
-                        );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF162534),
-                      minimumSize: const Size(double.infinity, 50),
-                    ),
-
-                    child: const Text(
-                      "Sign Up",
+                      "Register",
                       style: TextStyle(
                         fontFamily: 'Montserrat',
                         fontSize: 18,
@@ -252,54 +298,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 14),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      TextButton(
-                        onPressed: () {},
-                        child: const Text(
-                          "Login as Parent",
-                          style: TextStyle(
-                            fontFamily: 'Montserrat',
-                            fontWeight: FontWeight.normal,
-                            color: Color(0xFF08252E),
-                          ),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {},
-                        child: const Text(
-                          "Login as Teacher",
-                          style: TextStyle(
-                            fontFamily: 'Montserrat',
-                            fontWeight: FontWeight.normal,
-                            color: Color(0xFF08252E),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-          
-                  const Spacer(),
-                  const Text(
-                    "Address: \n St.96 Christopher Howes, Khan Daun Penh, Phnom Penh, Cambodia, 12202",
-                    style: TextStyle(
-                      fontFamily: 'Montserrat',
-                      fontWeight: FontWeight.normal,
-                      color: Color(0xFF08252E),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 15),
-                  const Text(
-                    "Website: https://numer.digital/",
-                    style: TextStyle(
-                      fontFamily: 'Montserrat',
-                      fontWeight: FontWeight.normal,
-                      color: Color(0xFF08252E),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
                 ],
               ),
             ),
