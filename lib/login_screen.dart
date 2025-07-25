@@ -1,8 +1,33 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:num_attendant/main_box_nav.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key});
+
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class AuthHelper {
+  var auth = FirebaseAuth.instance;
+
+  Future<bool> signInEmailAndPassword(String email, String password) async {
+    try {
+      await auth.signInWithEmailAndPassword(email: email, password: password);
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final AuthHelper _authentication = AuthHelper();
+  final TextEditingController _emailOrUsernameController =
+      TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +86,7 @@ class LoginPage extends StatelessWidget {
                       maxHeight: 55.0,
                     ),
                     child: TextFormField(
+                      controller: _emailOrUsernameController,
                       decoration: InputDecoration(
                         labelText: "Username or Email Address",
                         labelStyle: const TextStyle(
@@ -93,6 +119,7 @@ class LoginPage extends StatelessWidget {
                       maxHeight: 55.0,
                     ),
                     child: TextFormField(
+                      controller: _passwordController,
                       obscureText: true,
                       decoration: InputDecoration(
                         labelText: "Password",
@@ -116,7 +143,6 @@ class LoginPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(26),
                         ),
                       ),
-                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -156,13 +182,33 @@ class LoginPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 29),
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MainBottomNav(),
-                        ),
-                      );
+                    onPressed: () async {
+                      bool isLoggedIn = await _authentication
+                          .signInEmailAndPassword(
+                            _emailOrUsernameController.text,
+                            _passwordController.text,
+                          );
+
+                      if (isLoggedIn) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MainBottomNav(),
+                          ),
+                        );
+                      } else {
+                        // Show error message (e.g., using SnackBar)
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Login failed. Please check your credentials.',
+                            ),
+                          ),
+                        );
+
+                        _emailOrUsernameController.clear();
+                        _passwordController.clear();
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF162534),
