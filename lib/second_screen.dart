@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:num_attendant/main_box_nav.dart';
 
@@ -31,7 +30,7 @@ class SecondPage extends StatelessWidget {
                   onPressed: () {
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) =>  MainBottomNav(user: user)),
+                      MaterialPageRoute(builder: (context) =>  MainBottomNav()),
                       (route) => false,
                     );
                   },
