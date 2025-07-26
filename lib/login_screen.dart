@@ -11,23 +11,6 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
-// class CloudFirestoreHelper {
-//   var db = FirebaseFirestore.instance;
-
-//   Future<Map<String, dynamic>> getOneDocument(String docId) async {
-//     Map<String, dynamic> user = {};
-//     try {
-//       DocumentSnapshot<Map<String, dynamic>> snapshot =
-//           await db.collection('student_information').doc(docId).get();
-//       user = snapshot.data()!;
-//       return user;
-//     } catch (e) {
-//       print("Error loading user data: $e");
-//       return {};
-//     }
-//   }
-// }
-
 class AuthHelper {
   var auth = FirebaseAuth.instance;
 
@@ -47,21 +30,6 @@ class AuthHelper {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // final _firestoreHelper = CloudFirestoreHelper();
-  // Map<String, dynamic>? user;
-  // bool isLoading = true;
-  // final docsId = "fyu9nMIFn8e6E2H6PkgZ";
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _firestoreHelper.getOneDocument(docsId).then((value) {
-  //     setState(() {
-  //       user = value;
-  //       isLoading = false;
-  //     });
-  //   });
-  // }
     final AuthHelper _authentication = AuthHelper();
     final TextEditingController _emailOrUsernameController =
         TextEditingController();

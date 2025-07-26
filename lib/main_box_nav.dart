@@ -19,6 +19,15 @@ class CloudFirestoreHelper {
       return {};
     }
   }
+
+  Future<void> updateWithValue(Map<String, dynamic> data, String docId) async {
+    try {
+      await db.collection('student_information').doc(docId).update(data);
+      print("Document updated successfully.");
+    } catch (e) {
+      print("Error updating document: $e");
+    }
+  }
 }
 
 class MainBottomNav extends StatefulWidget {
@@ -59,18 +68,6 @@ class _MainBottomNavState extends State<MainBottomNav> {
       ];
     });
   }
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _screens = [
-  //     HomeScreen(user: widget.user),
-  //     Center(child: Text('Calendar Screen')),
-  //     Center(child: Text('Search Screen')),
-  //     Center(child: Text('Store Screen')),
-  //     AccountScreen(user: widget.user),  // Now widget.user is accessible
-  //   ];
-  // }
 
   void _onItemTapped(int index) {
     setState(() {

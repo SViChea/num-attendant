@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:num_attendant/second_screen.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AccountScreen extends StatelessWidget {
   // You may want to pass docId as a parameter to this widget
@@ -44,7 +43,7 @@ class AccountScreen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SecondPage(user: user!),
+                              builder: (context) => SecondScreen(user: user),
                             ),
                           );
                         },
