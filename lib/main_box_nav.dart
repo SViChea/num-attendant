@@ -28,6 +28,37 @@ class CloudFirestoreHelper {
       print("Error updating document: $e");
     }
   }
+
+  Future<String> createDocumentWithSet({
+    required String address,
+    required int attendant,
+    required int dayofabsent,
+    required String email,
+    required String fullname,
+    required int generation,
+    required String occupation,
+    required String phoneNumber,
+    required int rank,
+    required String docId
+  }) async {
+    try {
+      db.collection('student_information').doc(docId).set({
+        'address': address,
+        'attendant': attendant,
+        'dayofabsent': dayofabsent,
+        'email': email,
+        'fullname': fullname,
+        'generation': generation,
+        'occupation': occupation,
+        'phoneNumber': phoneNumber,
+        'rank': rank
+      });
+      return '$fullname set success';
+    } catch (e) {
+      print(e);
+      return 'Error';
+    }
+  }
 }
 
 class MainBottomNav extends StatefulWidget {

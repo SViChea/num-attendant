@@ -25,10 +25,15 @@ class AuthHelper {
       return false;
     }
   }
+
+  String getCurrentUserId() {
+    return auth.currentUser?.uid ?? '';
+  }
 }
 
 class _SignUpState extends State<SignUp> {
   final AuthHelper _authentication = AuthHelper();
+  final CloudFirestoreHelper _firestoreHelper = CloudFirestoreHelper();
 
   final TextEditingController _fullName = TextEditingController();
   final TextEditingController _emailAddress = TextEditingController();
@@ -256,17 +261,42 @@ class _SignUpState extends State<SignUp> {
                   const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () async {
-                      if (_passwordController.text == _confirmPasswordController.text) {
+                      if (_passwordController.text ==
+                          _confirmPasswordController.text) {
                         final res = await _authentication
                             .signUpEmailAndPassword(
                               _emailAddress.text,
                               _passwordController.text,
                             );
+
+                        _firestoreHelper.createDocumentWithSet(address: "", attendant: 0, dayofabsent: 0, email: _emailAddress.text, fullname: _fullName.text, generation: 0, occupation: "", phoneNumber: _phoneNumber.text, rank: 0, docId: _authentication.getCurrentUserId())
+                            .then(
+                              (value) => showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                    content: const Text(
+                                      'User has been added',
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => LoginPage(),
-                          ),
+                          MaterialPageRoute(builder: (context) => LoginPage()),
                         );
                       } else {
                         // Show error message (e.g., using SnackBar)
