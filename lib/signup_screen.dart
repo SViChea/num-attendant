@@ -38,9 +38,7 @@ class _SignUpState extends State<SignUp> {
   final TextEditingController _fullName = TextEditingController();
   final TextEditingController _emailAddress = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
-  final TextEditingController _phoneNumber = TextEditingController();
+  bool _obscureText = true;
 
   @override
   Widget build(BuildContext context) {
@@ -166,7 +164,7 @@ class _SignUpState extends State<SignUp> {
                     ),
                     child: TextFormField(
                       controller: _passwordController,
-                      obscureText: true,
+                      obscureText: _obscureText,
                       decoration: InputDecoration(
                         labelText: "Password",
                         labelStyle: const TextStyle(
@@ -178,38 +176,18 @@ class _SignUpState extends State<SignUp> {
                           Icons.lock,
                           color: Color(0xFF08252E),
                         ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(26),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureText
+                                ? Icons.visibility_off
+                                : Icons.visibility,
                             color: Color(0xFF08252E),
-                            width: 2.0,
                           ),
-                          borderRadius: BorderRadius.circular(26),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  Container(
-                    constraints: BoxConstraints(
-                      maxWidth: MediaQuery.of(context).size.width * 0.9,
-                      maxHeight: 55.0,
-                    ),
-                    child: TextFormField(
-                      controller: _confirmPasswordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: "Confirm Password",
-                        labelStyle: const TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontWeight: FontWeight.normal,
-                          color: Color(0xFF08252E),
-                        ),
-                        prefixIcon: const Icon(
-                          Icons.lock,
-                          color: Color(0xFF08252E),
+                          onPressed: () {
+                            setState(() {
+                              _obscureText = !_obscureText;
+                            });
+                          },
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(26),
@@ -224,93 +202,56 @@ class _SignUpState extends State<SignUp> {
                       ),
                     ),
                   ),
+
                   const SizedBox(height: 15),
-                  Container(
-                    constraints: BoxConstraints(
-                      maxWidth: MediaQuery.of(context).size.width * 0.9,
-                      maxHeight: 55.0,
-                    ),
-                    child: TextFormField(
-                      controller: _phoneNumber,
-                      decoration: InputDecoration(
-                        labelText: "Phone Number",
-                        labelStyle: const TextStyle(
-                          color: Color(0xFF08252E),
-                          fontFamily: 'Montserrat',
-                          fontWeight: FontWeight.normal,
-                        ),
-                        prefixIcon: const Icon(
-                          Icons.person,
-                          color: Color(0xFF08252E),
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(26),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            color: Color(0xFF08252E),
-                            width: 2.0,
-                          ),
-                          borderRadius: BorderRadius.circular(26),
-                        ),
-                      ),
-                      style: const TextStyle(color: Color(0xFF08252E)),
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () async {
-                      if (_passwordController.text ==
-                          _confirmPasswordController.text) {
-                        final res = await _authentication
-                            .signUpEmailAndPassword(
-                              _emailAddress.text,
-                              _passwordController.text,
-                            );
+                      final res = await _authentication.signUpEmailAndPassword(
+                        _emailAddress.text,
+                        _passwordController.text,
+                      );
 
-                        _firestoreHelper.createDocumentWithSet(address: "", attendant: 0, dayofabsent: 0, email: _emailAddress.text, fullname: _fullName.text, generation: 0, occupation: "", phoneNumber: _phoneNumber.text, rank: 0, docId: _authentication.getCurrentUserId())
-                            .then(
-                              (value) => showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(4),
+                      _firestoreHelper
+                          .createDocumentWithSet(
+                            address: "",
+                            attendant: 0,
+                            dayofabsent: 0,
+                            email: _emailAddress.text,
+                            fullname: _fullName.text,
+                            generation: 0,
+                            occupation: "",
+                            phoneNumber: "",
+                            rank: 0,
+                            docId: _authentication.getCurrentUserId(),
+                          )
+                          .then(
+                            (value) => showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('OK'),
                                     ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: const Text('OK'),
-                                      ),
-                                    ],
-                                    content: const Text(
-                                      'User has been added',
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  );
-                                },
-                              ),
-                            );
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
-                        );
-                      } else {
-                        // Show error message (e.g., using SnackBar)
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Passwords and Confirm Password do not match',
+                                  ],
+                                  content: const Text(
+                                    'User has been added',
+                                    textAlign: TextAlign.center,
+                                  ),
+                                );
+                              },
                             ),
-                          ),
-                        );
-
-                        _confirmPasswordController.clear();
-                        _passwordController.clear();
-                      }
+                          );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginPage()),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF162534),

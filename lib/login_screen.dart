@@ -189,6 +189,7 @@ class _LoginPageState extends State<LoginPage> {
                       ],
                     ),
                     const SizedBox(height: 15),
+                    // Login Button
                     ElevatedButton(
                       onPressed: () async {
                         bool isLoggedIn = await _authentication
@@ -234,6 +235,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: 10),
+                    // Sign Up Bottun
                     ElevatedButton(
                       onPressed: () {
                         Navigator.push(

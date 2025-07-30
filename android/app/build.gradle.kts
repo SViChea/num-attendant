@@ -47,3 +47,4 @@ tasks.withType<JavaCompile> {
 flutter {
     source = "../.."
 }
+

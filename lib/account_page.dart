@@ -16,7 +16,7 @@ class AccountScreen extends StatelessWidget {
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Image.asset('assets/profileicon.png', height: 197, width: 197),
+              Image.asset('https://vcstate-my.sharepoint.com/:i:/g/personal/vichea_vcstate_onmicrosoft_com/Ed_dsmVSJvpHt7llsLuCARwB-xlhPsZ9BI8xYUAVfgTKyA?e=V1JcaJ', height: 197, width: 197),
               SizedBox(height: 18),
               Text(
                 '${user["fullname"]}',
