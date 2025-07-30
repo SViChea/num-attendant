@@ -11,14 +11,16 @@ class SignUp extends StatefulWidget {
 }
 
 class AuthHelper {
-  var auth = FirebaseAuth.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
   Future<bool> signUpEmailAndPassword(String email, String password) async {
     try {
-      await auth.createUserWithEmailAndPassword(
+      UserCredential userCredential = await auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+      await userCredential.user?.sendEmailVerification();
+      print("Verification email sent to ${userCredential.user?.email}");
       return true;
     } catch (e) {
       print(e);
@@ -39,6 +41,33 @@ class _SignUpState extends State<SignUp> {
   final TextEditingController _emailAddress = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscureText = true;
+    bool _isLoading = false;
+
+  void _showLoadingDialog() {
+    setState(() {
+      _isLoading = true;
+    });
+    showDialog(
+      context: context,
+      barrierDismissible: false, // User must wait for operation to complete
+      builder: (BuildContext context) {
+        return const Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          ),
+        );
+      },
+    );
+  }
+
+    void _hideLoadingDialog() {
+    if (_isLoading) {
+      Navigator.of(context, rootNavigator: true).pop(); // Dismisses the dialog
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -205,69 +234,105 @@ class _SignUpState extends State<SignUp> {
 
                   const SizedBox(height: 15),
                   ElevatedButton(
-                    onPressed: () async {
-                      final res = await _authentication.signUpEmailAndPassword(
-                        _emailAddress.text,
-                        _passwordController.text,
-                      );
+                      onPressed: () async {
+                        _showLoadingDialog(); // Show loading indicator
 
-                      _firestoreHelper
-                          .createDocumentWithSet(
-                            address: "",
-                            attendant: 0,
-                            dayofabsent: 0,
-                            email: _emailAddress.text,
-                            fullname: _fullName.text,
-                            generation: 0,
-                            occupation: "",
-                            phoneNumber: "",
-                            rank: 0,
-                            docId: _authentication.getCurrentUserId(),
-                          )
-                          .then(
-                            (value) => showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: const Text('OK'),
+                        // Attempt to sign up the user and send verification email
+                        final bool signUpSuccess = await _authentication.signUpEmailAndPassword(
+                          _emailAddress.text,
+                          _passwordController.text,
+                        );
+
+                        if (signUpSuccess) {
+                          final String? userId = _authentication.getCurrentUserId();
+
+                          if (userId != null && userId.isNotEmpty) {
+                            // Create a document for the new user in Firestore
+                            try {
+                              await _firestoreHelper.createDocumentWithSet(address: "", attendant: 0, dayofabsent: 0, email: _emailAddress.text, fullname: _fullName.text, generation: 0, occupation: "", phoneNumber: "", rank: 0, docId: _authentication.getCurrentUserId());
+
+                              _hideLoadingDialog(); // Hide loading indicator
+
+                              // Show success message and prompt for email verification
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false, // User must acknowledge
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15), // Rounded corners
                                     ),
-                                  ],
-                                  content: const Text(
-                                    'User has been added',
-                                    textAlign: TextAlign.center,
-                                  ),
-                                );
-                              },
+                                    title: const Text(
+                                      'Registration Successful!',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                    content: Text(
+                                      'A verification email has been sent toR. Please verify your email address to log in.',
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop(); // Dismiss dialog
+                                          Navigator.pushReplacement( // Go to login page
+                                            context,
+                                            MaterialPageRoute(builder: (context) => LoginPage()),
+                                          );
+                                        },
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            } catch (e) {
+                              _hideLoadingDialog(); // Hide loading indicator
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Failed to save user data: $e'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                              // Optionally, delete the Firebase Auth user if Firestore save fails
+                              // await FirebaseAuth.instance.currentUser?.delete();
+                            }
+                          } else {
+                            _hideLoadingDialog(); // Hide loading indicator
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Sign up successful, but user ID not found.'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        } else {
+                          _hideLoadingDialog(); // Hide loading indicator
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Sign up failed. Please check your credentials.'),
+                              backgroundColor: Colors.red,
                             ),
                           );
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF162534),
-                      minimumSize: const Size(double.infinity, 50),
-                    ),
-
-                    child: const Text(
-                      "Register",
-                      style: TextStyle(
-                        fontFamily: 'Montserrat',
-                        fontSize: 18,
-                        fontWeight: FontWeight.normal,
-                        color: Colors.white,
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF162534),
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(26),
+                        ),
+                      ),
+                      child: const Text(
+                        "Register",
+                        style: TextStyle(
+                          fontFamily: 'Montserrat',
+                          fontSize: 18,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                  ),
                   const SizedBox(height: 14),
                 ],
               ),
